@@ -1,0 +1,59 @@
+// 공유 캘린더 스키마 — 설계 근거는 .scratch/shared-calendar/issues/01-db-schema-design.md
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  ownedCalendars Calendar[]       @relation("CalendarOwner")
+  memberships    CalendarMember[]
+  createdEvents  Event[]
+}
+
+model Calendar {
+  id        String   @id @default(uuid())
+  name      String
+  ownerId   String
+  owner     User     @relation("CalendarOwner", fields: [ownerId], references: [id])
+  createdAt DateTime @default(now())
+
+  members CalendarMember[]
+  events  Event[]
+}
+
+// 캘린더 생성 시 owner도 한 행 추가된다: 권한 체크를 "멤버인가?" 하나로 통일하기 위함.
+model CalendarMember {
+  id         String   @id @default(uuid())
+  calendarId String
+  userId     String
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([calendarId, userId])
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  calendarId  String
+  calendar    Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+  title       String
+  startAt     DateTime
+  endAt       DateTime
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([calendarId, startAt])
+}

@@ -7,7 +7,8 @@
 // there's no existing calendar page yet to embed variants into.
 // Delete this whole route once a variant is picked and folded into real pages.
 
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
 type EventItem = { id: string; title: string; day: number; startTime: string; endTime: string };
 type Member = { email: string; name: string };
@@ -490,22 +491,14 @@ function PrototypeSwitcher({ current, onChange }: { current: string; onChange: (
   );
 }
 
-export default function SharedCalendarPrototypePage() {
-  const [variant, setVariant] = useState("A");
+function SharedCalendarPrototype() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const ws = useCalendarWorkspace();
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const v = params.get("variant");
-    if (v && VARIANTS.some((def) => def.key === v)) setVariant(v);
-  }, []);
-
-  const changeVariant = (key: string) => {
-    setVariant(key);
-    const url = new URL(window.location.href);
-    url.searchParams.set("variant", key);
-    window.history.replaceState(null, "", url.toString());
-  };
+  const param = searchParams.get("variant");
+  const variant = VARIANTS.some((def) => def.key === param) ? param! : "A";
+  const changeVariant = (key: string) => router.replace(`?variant=${key}`, { scroll: false });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -536,5 +529,14 @@ export default function SharedCalendarPrototypePage() {
 
       <PrototypeSwitcher current={variant} onChange={changeVariant} />
     </div>
+  );
+}
+
+export default function SharedCalendarPrototypePage() {
+  // useSearchParams needs a Suspense boundary in the App Router.
+  return (
+    <Suspense>
+      <SharedCalendarPrototype />
+    </Suspense>
   );
 }

@@ -27,12 +27,15 @@ Part 2(Python AI 추론 서버 확장)는 이 맵의 범위 밖 — 이 맵이 �
 - [03-supabase-connection-setup](issues/03-supabase-connection-setup.md): Supabase 연결 정보(DATABASE_URL/DIRECT_URL/URL/anon key/service_role key) `.env.local`에 저장 완료, `.env.example` 동기화. Supabase 대시보드 UI 개편 관련 경로/명칭 메모 남김.
 - [01-db-schema-design](issues/01-db-schema-design.md): User/Calendar/CalendarMember/Event 4개 모델 확정, UUID id, role 구분 없음, 캘린더 생성 시 owner도 CalendarMember로 자동 등록. 초안: [01-schema-draft.prisma](issues/01-schema-draft.prisma)
 - [02-invite-flow-ui-prototype](issues/02-invite-flow-ui-prototype.md): 사이드바 리스트-상세 레이아웃(Variant A) 채택, 월간 뷰 일정에 시작시간 표시 + 폼에 시작/종료 시간 입력 필수. 프로토타입 라우트는 06/07번 구현 후 삭제 예정.
+- [04-prisma-schema-migration](issues/04-prisma-schema-migration.md): Prisma 7.10.0(버전 고정) + `@prisma/adapter-pg`로 구성, `init` 마이그레이션 적용해 Supabase에 4개 테이블 생성. CLI는 `DIRECT_URL`(5432), 런타임은 풀링 `DATABASE_URL`(6543). 런타임 클라이언트: `src/lib/prisma.ts`
+- [05-supabase-auth-integration](issues/05-supabase-auth-integration.md): `@supabase/ssr`로 이메일/비밀번호 인증 + 미들웨어 라우트 보호 구현, 로그인 시 `public.User`에 upsert. 개발 편의를 위해 Supabase의 Confirm email을 끔(배포 전 재검토 — 10번 티켓).
+- [06-calendar-crud-implementation](issues/06-calendar-crud-implementation.md): 캘린더/일정 CRUD를 API Routes + Variant A 화면으로 구현, 멤버십 기반 권한 체크(남의 캘린더 접근 403) 검증 완료. 스타일링은 범위 밖.
+- [07-invite-feature-implementation](issues/07-invite-feature-implementation.md): 이메일 초대 API + 모달 구현. 미가입자 404 / 중복 409 / 제3자 초대 시도 403, 초대 즉시 상대 목록에 노출됨. 스타일링은 [11-ui-styling](issues/11-ui-styling.md)로 분리(사용자 결정: 기능 완료 후 진행).
 
 ## Not yet specified
 
 - 배포 후 커스텀 도메인 필요 여부
-- 로딩/에러 상태 UX 디테일 (스피너, 에러 메시지 문구 등) — 화면 구현 단계에서 구체화
-- 캘린더 색상/테마 커스터마이징 필요 여부
+- 타임존이 다른 멤버 간 일정 표시 차이 (08번 통합 테스트에서 확인 후 대응 여부 판단)
 
 ## Out of scope
 
