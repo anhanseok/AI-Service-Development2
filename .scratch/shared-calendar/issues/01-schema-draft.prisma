@@ -1,0 +1,51 @@
+// Draft schema for 01-db-schema-design — not wired up yet (see ticket 04).
+// User.id is expected to equal the Supabase Auth user id (auth.users.id),
+// populated on first login rather than managed by Prisma migrations.
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  ownedCalendars Calendar[]       @relation("CalendarOwner")
+  memberships    CalendarMember[]
+  createdEvents  Event[]
+}
+
+model Calendar {
+  id        String   @id @default(uuid())
+  name      String
+  ownerId   String
+  owner     User     @relation("CalendarOwner", fields: [ownerId], references: [id])
+  createdAt DateTime @default(now())
+
+  members CalendarMember[]
+  events  Event[]
+}
+
+// "누가 어느 캘린더에 속해있나" — role 구분 없음(전원 동일 권한).
+// 캘린더 생성 시 owner도 자동으로 이 표에 한 행 추가된다 (권한 체크를 하나로 통일).
+model CalendarMember {
+  id         String   @id @default(uuid())
+  calendarId String
+  userId     String
+  calendar   Calendar @relation(fields: [calendarId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@unique([calendarId, userId])
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  calendarId  String
+  calendar    Calendar @relation(fields: [calendarId], references: [id])
+  title       String
+  startAt     DateTime
+  endAt       DateTime
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
