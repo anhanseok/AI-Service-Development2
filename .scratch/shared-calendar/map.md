@@ -31,11 +31,11 @@ Part 2(Python AI 추론 서버 확장)는 이 맵의 범위 밖 — 이 맵이 �
 - [05-supabase-auth-integration](issues/05-supabase-auth-integration.md): `@supabase/ssr`로 이메일/비밀번호 인증 + 미들웨어 라우트 보호 구현, 로그인 시 `public.User`에 upsert. 개발 편의를 위해 Supabase의 Confirm email을 끔(배포 전 재검토 — 10번 티켓).
 - [06-calendar-crud-implementation](issues/06-calendar-crud-implementation.md): 캘린더/일정 CRUD를 API Routes + Variant A 화면으로 구현, 멤버십 기반 권한 체크(남의 캘린더 접근 403) 검증 완료. 스타일링은 범위 밖.
 - [07-invite-feature-implementation](issues/07-invite-feature-implementation.md): 이메일 초대 API + 모달 구현. 미가입자 404 / 중복 409 / 제3자 초대 시도 403, 초대 즉시 상대 목록에 노출됨. 스타일링은 [11-ui-styling](issues/11-ui-styling.md)로 분리(사용자 결정: 기능 완료 후 진행).
+- [08-integration-testing](issues/08-integration-testing.md): 프로덕션 빌드를 UTC로 띄워 전체 플로우 13항목 통과. **월 경계 일정이 옆 달로 새는 타임존 버그 발견·수정** — 월 범위를 서버가 아닌 브라우저가 절대 시각으로 계산해 보내도록 변경(`from`/`to`). 해외 멤버 간 표시 차이는 의도된 동작으로 남김.
 
 ## Not yet specified
 
 - 배포 후 커스텀 도메인 필요 여부
-- 타임존이 다른 멤버 간 일정 표시 차이 (08번 통합 테스트에서 확인 후 대응 여부 판단)
 
 ## Out of scope
 

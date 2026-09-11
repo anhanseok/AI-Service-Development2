@@ -32,6 +32,12 @@ function toIso(date: string, time: string) {
   return new Date(`${date}T${time}`).toISOString();
 }
 
+// The month's first instant as the viewer's clock sees it. Computed here, not
+// on the server, because the server runs in UTC and would shift the boundary.
+function monthStart(year: number, month: number) {
+  return encodeURIComponent(new Date(year, month, 1).toISOString());
+}
+
 export default function CalendarWorkspace({
   userEmail,
   initialCalendars,
@@ -64,7 +70,7 @@ export default function CalendarWorkspace({
       setEvents([]);
       return;
     }
-    const res = await fetch(`/api/calendars/${selectedId}/events?year=${year}&month=${month + 1}`);
+    const res = await fetch(`/api/calendars/${selectedId}/events?from=${monthStart(year, month)}&to=${monthStart(year, month + 1)}`);
     const data = await res.json();
     if (!res.ok) return setError(data.error);
     setEvents(data.events);
@@ -75,7 +81,7 @@ export default function CalendarWorkspace({
     let cancelled = false;
     (async () => {
       if (!selectedId) return;
-      const res = await fetch(`/api/calendars/${selectedId}/events?year=${year}&month=${month + 1}`);
+      const res = await fetch(`/api/calendars/${selectedId}/events?from=${monthStart(year, month)}&to=${monthStart(year, month + 1)}`);
       const data = await res.json();
       if (cancelled) return;
       if (!res.ok) setError(data.error);
