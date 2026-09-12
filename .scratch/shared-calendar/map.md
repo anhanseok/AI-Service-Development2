@@ -1,5 +1,7 @@
 # Map: 공유 캘린더 (Shared Calendar) — Part 1
 
+> ✅ **완료 (2026-09-12).** 티켓 11개 전부 resolved. 목적지 도달: https://ai-service-development2.vercel.app 에 동작하는 공유 캘린더 배포. Part 2(Python AI 서버)는 별도 맵.
+
 ## Destination
 
 강남대학교 인공지능전공 "AI 서비스 웹앱 개발 프로세스" 강의자료 Part 1 방법론(Next.js · TypeScript · Tailwind CSS · API Routes · PostgreSQL/Prisma · Vercel)을 그대로 따라, **실제로 동작하는 공유 캘린더 웹앱**을 완성한다.
@@ -34,7 +36,8 @@ Part 2(Python AI 추론 서버 확장)는 이 맵의 범위 밖 — 이 맵이 �
 - [08-integration-testing](issues/08-integration-testing.md): 프로덕션 빌드를 UTC로 띄워 전체 플로우 13항목 통과. **월 경계 일정이 옆 달로 새는 타임존 버그 발견·수정** — 월 범위를 서버가 아닌 브라우저가 절대 시각으로 계산해 보내도록 변경(`from`/`to`). 해외 멤버 간 표시 차이는 의도된 동작으로 남김.
 - [09-vercel-deploy](issues/09-vercel-deploy.md): **https://ai-service-development2.vercel.app 배포 완료.** 환경변수 5개 등록(NEXT_PUBLIC_은 Config 타입만 허용), 빌드 스크립트에 `prisma generate` 추가해 빌드 실패 해결. 실제 URL에서 CRUD·초대·타임존 검증 통과. Supabase 무료 티어는 7일 미사용 시 일시정지됨.
 
-- [10-security-review](issues/10-security-review.md): **anon 키로 DB 직접 접근 시도 전부 차단 확인**(RLS ON + Data API 권한 미부여 이중 방어), 모든 라우트 인증·권한 체크 확인, 입력 길이 제한 추가. 남은 조치: DB 비밀번호 재설정(노출됨), Vercel에서 미사용 service_role 키 삭제, Confirm email 재검토.
+- [10-security-review](issues/10-security-review.md): **anon 키로 DB 직접 접근 시도 전부 차단 확인**(RLS ON + Data API 권한 미부여 이중 방어), 모든 라우트 인증·권한 체크 확인, 입력 길이 제한 추가. 배포 URL 대상 침투 테스트 11종(IDOR/권한상승/JWT위조/mass assignment/인젝션) 전부 방어. 남은 조치: DB 비밀번호 재설정(노출됨), Vercel에서 미사용 service_role 키 삭제, Confirm email 재검토.
+- [11-ui-styling](issues/11-ui-styling.md): 깔끔한 모던 톤 + 라이트/다크 자동 전환. globals.css 디자인 토큰 기반으로 로그인·캘린더·모달 스타일링, 오늘 날짜 강조, ModalShell 추출. 프로토타입 라우트 삭제 완료.
 
 ## Not yet specified
 

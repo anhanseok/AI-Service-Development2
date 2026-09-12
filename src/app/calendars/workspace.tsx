@@ -180,69 +180,114 @@ export default function CalendarWorkspace({
   );
   const selected = calendars.find((c) => c.id === selectedId) ?? null;
 
+  const today = new Date();
+  const isToday = (day: number) =>
+    today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+
+  const fieldClass =
+    "w-full bg-background border border-border rounded-lg px-3 py-2 text-sm placeholder:text-muted";
+
   return (
     <div className="flex flex-1 min-h-screen">
-      <aside className="w-56 border-r p-3 flex flex-col">
-        <p className="text-xs font-semibold opacity-60 mb-2">내 캘린더</p>
-        <div className="space-y-1 flex-1">
+      <aside className="w-60 border-r border-border bg-surface p-4 flex flex-col">
+        <div className="flex items-center gap-2 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-primary text-primary-fg grid place-items-center">📅</div>
+          <span className="font-semibold tracking-tight">공유 캘린더</span>
+        </div>
+
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted mb-2 px-1">내 캘린더</p>
+        <div className="space-y-0.5 flex-1">
           {calendars.map((c) => (
             <button
               key={c.id}
               onClick={() => setSelectedId(c.id)}
-              className={`w-full text-left px-2 py-1.5 rounded text-sm ${
-                c.id === selectedId ? "bg-blue-600 text-white" : "hover:bg-black/5"
+              className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                c.id === selectedId
+                  ? "bg-primary text-primary-fg font-medium"
+                  : "text-foreground hover:bg-hover"
               }`}
             >
               {c.name}
             </button>
           ))}
-          {calendars.length === 0 && <p className="text-xs opacity-50 px-2">캘린더가 없습니다.</p>}
-          <button onClick={createCalendar} className="w-full text-left px-2 py-1.5 rounded text-sm opacity-70 hover:bg-black/5">
+          {calendars.length === 0 && (
+            <p className="text-xs text-muted px-3 py-2">아직 캘린더가 없어요.</p>
+          )}
+          <button
+            onClick={createCalendar}
+            className="w-full text-left px-3 py-2 rounded-lg text-sm text-muted hover:bg-hover hover:text-foreground transition-colors"
+          >
             + 새 캘린더
           </button>
         </div>
-        <div className="border-t pt-3 mt-3 space-y-2">
-          <p className="text-xs opacity-60 break-all">{userEmail}</p>
+
+        <div className="border-t border-border pt-3 mt-3 space-y-1.5">
+          <p className="text-xs text-muted break-all">{userEmail}</p>
           <form action={signOut}>
-            <button className="text-xs opacity-70 underline">로그아웃</button>
+            <button className="text-xs text-muted hover:text-danger transition-colors">로그아웃</button>
           </form>
         </div>
       </aside>
 
-      <main className="flex-1 p-4">
+      <main className="flex-1 p-6 overflow-x-auto">
         {error && (
-          <div className="mb-3 text-sm text-red-600 flex gap-2">
+          <div className="mb-4 text-sm text-danger bg-danger/10 border border-danger/30 rounded-lg px-3 py-2 flex justify-between items-center gap-2">
             <span>{error}</span>
-            <button onClick={() => setError(null)} className="underline opacity-70">닫기</button>
+            <button onClick={() => setError(null)} className="text-muted hover:text-foreground">✕</button>
           </div>
         )}
 
         {!selected ? (
-          <p className="text-sm opacity-70">왼쪽에서 캘린더를 만들어 시작하세요.</p>
+          <div className="h-full grid place-items-center text-center">
+            <div>
+              <p className="text-4xl mb-3">🗓️</p>
+              <p className="text-sm text-muted">왼쪽에서 캘린더를 만들어 시작하세요.</p>
+            </div>
+          </div>
         ) : (
           <>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">{selected.name}</h2>
-              <button onClick={openMembers} className="text-sm border rounded px-3 py-1.5">
-                멤버 초대 ({selected._count.members})
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-xl font-semibold tracking-tight">{selected.name}</h2>
+              <button
+                onClick={openMembers}
+                className="text-sm border border-border rounded-lg px-3 py-1.5 hover:bg-hover transition-colors"
+              >
+                멤버 {selected._count.members}명 · 초대
               </button>
             </div>
 
-            <div className="flex items-center gap-3 mb-2">
-              <button onClick={() => setViewDate(new Date(year, month - 1, 1))} className="text-sm px-2 py-1 border rounded">
+            <div className="flex items-center gap-2 mb-4">
+              <button
+                onClick={() => setViewDate(new Date(year, month - 1, 1))}
+                className="w-8 h-8 grid place-items-center border border-border rounded-lg hover:bg-hover transition-colors"
+              >
                 ←
               </button>
-              <h3 className="font-medium">
+              <h3 className="font-medium text-lg min-w-32 text-center">
                 {year}년 {month + 1}월
               </h3>
-              <button onClick={() => setViewDate(new Date(year, month + 1, 1))} className="text-sm px-2 py-1 border rounded">
+              <button
+                onClick={() => setViewDate(new Date(year, month + 1, 1))}
+                className="w-8 h-8 grid place-items-center border border-border rounded-lg hover:bg-hover transition-colors"
+              >
                 →
+              </button>
+              <button
+                onClick={() => setViewDate(new Date())}
+                className="ml-2 text-sm text-muted hover:text-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-hover transition-colors"
+              >
+                오늘
               </button>
             </div>
 
-            <div className="grid grid-cols-7 gap-1 text-xs">
-              {["일", "월", "화", "수", "목", "금", "토"].map((d) => (
-                <div key={d} className="text-center opacity-60 pb-1">
+            <div className="grid grid-cols-7 gap-px bg-border border border-border rounded-xl overflow-hidden min-w-[560px]">
+              {["일", "월", "화", "수", "목", "금", "토"].map((d, i) => (
+                <div
+                  key={d}
+                  className={`text-center text-xs font-medium py-2 bg-surface ${
+                    i === 0 ? "text-danger" : i === 6 ? "text-primary" : "text-muted"
+                  }`}
+                >
                   {d}
                 </div>
               ))}
@@ -258,9 +303,21 @@ export default function CalendarWorkspace({
                       title: "",
                     })
                   }
-                  className={`border rounded min-h-20 p-1 ${day ? "cursor-pointer hover:bg-black/5" : "opacity-0"}`}
+                  className={`min-h-24 p-1.5 bg-surface ${
+                    day ? "cursor-pointer hover:bg-hover transition-colors" : ""
+                  }`}
                 >
-                  {day && <div className="text-right opacity-70">{day}</div>}
+                  {day && (
+                    <div className="flex justify-end mb-1">
+                      <span
+                        className={`text-xs w-6 h-6 grid place-items-center rounded-full ${
+                          isToday(day) ? "bg-primary text-primary-fg font-semibold" : "text-muted"
+                        }`}
+                      >
+                        {day}
+                      </span>
+                    </div>
+                  )}
                   {day &&
                     events
                       .filter((e) => new Date(e.startAt).getDate() === day)
@@ -278,9 +335,9 @@ export default function CalendarWorkspace({
                               title: e.title,
                             });
                           }}
-                          className="bg-blue-600 text-white text-[10px] rounded px-1 mt-0.5 truncate"
+                          className="bg-primary/15 text-foreground border-l-2 border-primary text-[11px] rounded px-1.5 py-0.5 mt-0.5 truncate hover:bg-primary/25 transition-colors"
                         >
-                          <span className="opacity-80">{toTimeInput(e.startAt)}</span> {e.title}
+                          <span className="text-primary font-medium">{toTimeInput(e.startAt)}</span> {e.title}
                         </div>
                       ))}
                 </div>
@@ -291,107 +348,128 @@ export default function CalendarWorkspace({
       </main>
 
       {members && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40" onClick={() => setMembers(null)}>
-          <div className="bg-white text-black rounded-lg p-6 w-full max-w-md space-y-4" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center">
-              <h2 className="font-semibold text-lg">멤버 초대</h2>
-              <button onClick={() => setMembers(null)} className="opacity-60">✕</button>
-            </div>
-
-            <div className="space-y-2">
+        <ModalShell title="멤버 초대" onClose={() => setMembers(null)}>
+          <div className="space-y-2">
+            <div className="flex gap-2">
               <input
                 autoFocus
                 type="email"
-                className="w-full border rounded px-3 py-2 text-sm"
+                className={fieldClass}
                 placeholder="초대할 사람의 이메일"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && invite()}
               />
-              <button onClick={invite} className="bg-blue-600 text-white rounded px-4 py-2 text-sm">
+              <button
+                onClick={invite}
+                className="bg-primary hover:bg-primary-hover text-primary-fg rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors"
+              >
                 초대
               </button>
-              {inviteResult && (
-                <p className={`text-sm ${inviteResult.ok ? "text-green-600" : "text-red-600"}`}>{inviteResult.text}</p>
-              )}
-              <p className="text-xs opacity-60">이미 가입한 사용자만 초대할 수 있습니다.</p>
             </div>
-
-            <div className="pt-4 border-t">
-              <p className="text-sm font-medium mb-2">현재 멤버 ({members.length})</p>
-              <ul className="text-sm space-y-1">
-                {members.map((m) => (
-                  <li key={m.userId}>
-                    {m.email}
-                    {m.isOwner && <span className="text-xs opacity-60"> · 소유자</span>}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {inviteResult && (
+              <p className={`text-sm ${inviteResult.ok ? "text-success" : "text-danger"}`}>{inviteResult.text}</p>
+            )}
+            <p className="text-xs text-muted">이미 가입한 사용자만 초대할 수 있습니다.</p>
           </div>
-        </div>
+
+          <div className="pt-4 border-t border-border">
+            <p className="text-sm font-medium mb-2">현재 멤버 ({members.length})</p>
+            <ul className="text-sm space-y-1.5">
+              {members.map((m) => (
+                <li key={m.userId} className="flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-full bg-hover grid place-items-center text-xs uppercase">
+                    {m.email[0]}
+                  </span>
+                  <span className="truncate">{m.email}</span>
+                  {m.isOwner && (
+                    <span className="text-[10px] text-primary border border-primary/40 rounded px-1.5 py-0.5">소유자</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </ModalShell>
       )}
 
       {draft && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40" onClick={() => setDraft(null)}>
-          <div className="bg-white text-black rounded-lg p-6 w-full max-w-md space-y-4" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center">
-              <h2 className="font-semibold text-lg">{draft.id ? "일정 수정" : "일정 추가"}</h2>
-              <button onClick={() => setDraft(null)} className="opacity-60">✕</button>
-            </div>
-
+        <ModalShell title={draft.id ? "일정 수정" : "일정 추가"} onClose={() => setDraft(null)}>
+          <input
+            autoFocus
+            className={fieldClass}
+            placeholder="일정 제목"
+            value={draft.title}
+            onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+          />
+          <label className="block text-xs text-muted">
+            날짜
             <input
-              autoFocus
-              className="w-full border rounded px-3 py-2 text-sm"
-              placeholder="일정 제목"
-              value={draft.title}
-              onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+              type="date"
+              className={`${fieldClass} mt-1`}
+              value={draft.date}
+              onChange={(e) => setDraft({ ...draft, date: e.target.value })}
             />
-            <label className="block text-xs opacity-70">
-              날짜
+          </label>
+          <div className="flex gap-3">
+            <label className="flex-1 text-xs text-muted">
+              시작 시간
               <input
-                type="date"
-                className="w-full border rounded px-3 py-2 text-sm mt-1"
-                value={draft.date}
-                onChange={(e) => setDraft({ ...draft, date: e.target.value })}
+                type="time"
+                className={`${fieldClass} mt-1`}
+                value={draft.startTime}
+                onChange={(e) => setDraft({ ...draft, startTime: e.target.value })}
               />
             </label>
-            <div className="flex gap-3">
-              <label className="flex-1 text-xs opacity-70">
-                시작 시간
-                <input
-                  type="time"
-                  className="w-full border rounded px-3 py-2 text-sm mt-1"
-                  value={draft.startTime}
-                  onChange={(e) => setDraft({ ...draft, startTime: e.target.value })}
-                />
-              </label>
-              <label className="flex-1 text-xs opacity-70">
-                종료 시간
-                <input
-                  type="time"
-                  className="w-full border rounded px-3 py-2 text-sm mt-1"
-                  value={draft.endTime}
-                  onChange={(e) => setDraft({ ...draft, endTime: e.target.value })}
-                />
-              </label>
-            </div>
-
-            <div className="flex justify-between pt-2">
-              {draft.id ? (
-                <button onClick={deleteEvent} className="text-red-600 text-sm">
-                  삭제
-                </button>
-              ) : (
-                <span />
-              )}
-              <button onClick={saveEvent} className="bg-blue-600 text-white rounded px-4 py-2 text-sm">
-                저장
-              </button>
-            </div>
+            <label className="flex-1 text-xs text-muted">
+              종료 시간
+              <input
+                type="time"
+                className={`${fieldClass} mt-1`}
+                value={draft.endTime}
+                onChange={(e) => setDraft({ ...draft, endTime: e.target.value })}
+              />
+            </label>
           </div>
-        </div>
+
+          <div className="flex justify-between items-center pt-2">
+            {draft.id ? (
+              <button onClick={deleteEvent} className="text-danger text-sm hover:underline">
+                삭제
+              </button>
+            ) : (
+              <span />
+            )}
+            <button
+              onClick={saveEvent}
+              className="bg-primary hover:bg-primary-hover text-primary-fg rounded-lg px-5 py-2 text-sm font-medium transition-colors"
+            >
+              저장
+            </button>
+          </div>
+        </ModalShell>
       )}
+    </div>
+  );
+}
+
+function ModalShell({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-surface text-foreground border border-border rounded-2xl p-6 w-full max-w-md space-y-4 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center">
+          <h2 className="font-semibold text-lg">{title}</h2>
+          <button onClick={onClose} className="text-muted hover:text-foreground w-8 h-8 grid place-items-center rounded-lg hover:bg-hover transition-colors">
+            ✕
+          </button>
+        </div>
+        {children}
+      </div>
     </div>
   );
 }
