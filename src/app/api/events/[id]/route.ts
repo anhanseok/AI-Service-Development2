@@ -26,6 +26,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const endAt = new Date(body.endAt);
 
   if (!title) return NextResponse.json({ error: "일정 제목을 입력해주세요." }, { status: 400 });
+  if (title.length > 200) return NextResponse.json({ error: "일정 제목이 너무 깁니다." }, { status: 400 });
   if (Number.isNaN(startAt.getTime()) || Number.isNaN(endAt.getTime())) {
     return NextResponse.json({ error: "시작/종료 시간이 올바르지 않습니다." }, { status: 400 });
   }

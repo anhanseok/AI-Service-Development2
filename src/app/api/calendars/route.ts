@@ -19,6 +19,7 @@ export async function POST(request: Request) {
   const body = await request.json();
   const name = typeof body.name === "string" ? body.name.trim() : "";
   if (!name) return NextResponse.json({ error: "캘린더 이름을 입력해주세요." }, { status: 400 });
+  if (name.length > 100) return NextResponse.json({ error: "캘린더 이름이 너무 깁니다." }, { status: 400 });
 
   await ensureUserRow(user.id, user.email ?? "");
 
